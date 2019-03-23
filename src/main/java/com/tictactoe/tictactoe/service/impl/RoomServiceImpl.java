@@ -77,13 +77,6 @@ public class RoomServiceImpl implements RoomService {
         return status;
     }
 
-    @Override
-    public Map<String, Object> status(String roomName) {
-        List<BattleEntity> be = battleRepository.findByRoomName(roomName);
-        Map<String, Object> returnValue = new HashMap<>();
-        returnValue.put("posisi", be);
-        return returnValue;
-    }
 
     @Override
     public Map<String, Object> calculateWinner(String roomName, String xPlayer, String oPlayer) {
@@ -93,6 +86,7 @@ public class RoomServiceImpl implements RoomService {
         String winner ="";
         if(be.size() == 9){
             status = "draw";
+            winner = "none";
         }
         String[][] square = {{"-","-","-"},{"-","-","-"},{"-","-","-"}};
         int[] column = new int[9];
@@ -124,7 +118,7 @@ public class RoomServiceImpl implements RoomService {
 
             }
         }
-        if(status.equals("finished") && ren.getWinner() == null){
+        if(status.equals("finished") || status.equals("draw") && ren.getWinner() == null){
             ren.setWinner(winner);
             roomRepository.save(ren);
         }
