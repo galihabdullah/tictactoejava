@@ -1,7 +1,7 @@
-#Latar Belakang
+Latar Belakang
 applikasi ini hanya untuk komparasi antara bahasa pemrograman java dan php
 
-#technology 
+technology 
 - java spring boot
 - orm hibernate
 - swagger > documentasi api
