@@ -95,17 +95,16 @@ public class RoomServiceImpl implements RoomService {
                 }else if(be.get(j).getPlayer().equals(oPlayer)){
                     square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "O";
                 }
-                if(!square[i][i].equals("-")){
-                    if(square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
+                    if(square[i][0].equals("X") && square[i][0].equals("O") && square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
                         status = "finished";
                         winner = square[i][0].equals("X") ? xPlayer : oPlayer;
-                    }else if(square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i])){
+                    }else if(square[0][i].equals("X") && square[0][i].equals("O") && square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i])){
                         status = "finished";
-                        winner = square[i][0].equals("X") ? xPlayer : oPlayer;
-                    }else if(square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
+                        winner = square[0][i].equals("X") ? xPlayer : oPlayer;
+                    }else if(square[0][0].equals("X") && square[0][0].equals("O")  && square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
                         status = "finished";
                         winner = square[2][2].equals("X") ? xPlayer : oPlayer;                        ;
-                    }else if(square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
+                    }else if(square[0][2].equals("X") && square[0][2].equals("O") &&square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
                         status = "finished";
                         winner = square[2][0].equals("X") ? xPlayer : oPlayer;
                     }else{
@@ -114,7 +113,6 @@ public class RoomServiceImpl implements RoomService {
                     }
                 }
 
-            }
         }
         if(status.equals("finished") || status.equals("draw") && ren.getWinner() == null){
             ren.setWinner(winner);
