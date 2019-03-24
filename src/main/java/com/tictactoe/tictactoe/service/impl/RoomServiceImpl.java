@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import javax.swing.text.AbstractDocument.BranchElement;
+
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -83,9 +85,10 @@ public class RoomServiceImpl implements RoomService {
         RoomEntity ren = roomRepository.findByRoomName(roomName);
         String status ="";
         String winner ="";
+        String dominate = "";
         if(be.size() == 9){
-            status = "draw";
-            winner = "none";
+            status = "finished";
+            winner = "draw";
         }
         String[][] square = {{"-","-","-"},{"-","-","-"},{"-","-","-"}};
         for(int i = 0; i < square.length; i++){
@@ -95,26 +98,33 @@ public class RoomServiceImpl implements RoomService {
                 }else if(be.get(j).getPlayer().equals(oPlayer)){
                     square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "O";
                 }
-                    if(square[i][0].equals("X") && square[i][0].equals("O") && square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
-                        status = "finished";
-                        winner = square[i][0].equals("X") ? xPlayer : oPlayer;
-                    }else if(square[0][i].equals("X") && square[0][i].equals("O") && square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i])){
-                        status = "finished";
-                        winner = square[0][i].equals("X") ? xPlayer : oPlayer;
-                    }else if(square[0][0].equals("X") && square[0][0].equals("O")  && square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
-                        status = "finished";
-                        winner = square[2][2].equals("X") ? xPlayer : oPlayer;                        ;
-                    }else if(square[0][2].equals("X") && square[0][2].equals("O") &&square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
-                        status = "finished";
-                        winner = square[2][0].equals("X") ? xPlayer : oPlayer;
+
+                    if(!square[i][0].equals("-") && square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
+                        dominate = square[i][0];
+                    }else if(!square[0][i].equals("-") && (square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i]))){
+                        dominate = square[0][i];
+                    }else if(!square[0][0].equals("-") && square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
+                        dominate = square[2][2];
+                    }else if(!square[0][2].equals("-") && square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
+                        dominate = square[2][0];
                     }else{
-                        status = "on battle";
                         winner = "none";
+                        status = "on battle";
                     }
                 }
 
         }
-        if(status.equals("finished") || status.equals("draw") && ren.getWinner() == null){
+        switch(dominate){
+            case "X" :
+            winner = xPlayer;
+            status = "Finished";
+            break;
+            case "O" :
+            winner = oPlayer;
+            status = "Finished";
+            break;
+        }
+        if(!winner.equals("none") && !winner.equals("") && ren.getWinner() == null){
             ren.setWinner(winner);
             roomRepository.save(ren);
         }
