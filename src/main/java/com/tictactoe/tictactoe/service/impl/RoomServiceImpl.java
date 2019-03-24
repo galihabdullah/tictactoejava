@@ -10,6 +10,7 @@ import com.tictactoe.tictactoe.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 import javax.swing.text.AbstractDocument.BranchElement;
@@ -32,10 +33,12 @@ public class RoomServiceImpl implements RoomService {
         RoomEntity ren = new RoomEntity();
         ren.setXplayer(name);
         ren.setRoomName(roomName);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         roomRepository.save(ren);
         Map<String, Object> returnValue = new HashMap<>();
         returnValue.put("roomName", ren.getRoomName());
-        returnValue.put("XPlayer", ren.getXplayer());
+        returnValue.put("X Player", ren.getXplayer());
+        returnValue.put("create at",timestamp);
         return returnValue;
     }
 
@@ -43,12 +46,14 @@ public class RoomServiceImpl implements RoomService {
     public Map<String, Object> entryRoom(String roomName, String name) {
         RoomEntity ren = roomRepository.findByRoomName(roomName);
         if(ren == null) throw new ResourceNotFoundException("invalid room");
+        if(ren.getOplayer() != null) throw new ResourceNotFoundException("battle has been started");
         ren.setOplayer(name);
         roomRepository.save(ren);
         Map<String, Object> returnValue = new HashMap<>();
         returnValue.put("roomName", ren.getRoomName());
         returnValue.put("X Player", ren.getXplayer());
         returnValue.put("O Player", ren.getOplayer());
+        returnValue.put("create at", ren.getCreateAt());
         return returnValue;
     }
 
@@ -85,35 +90,20 @@ public class RoomServiceImpl implements RoomService {
         RoomEntity ren = roomRepository.findByRoomName(roomName);
         String status ="";
         String winner ="";
-        String dominate = "";
         if(be.size() == 9){
-            status = "finished";
+            status = "Finished";
             winner = "draw";
         }
         String[][] square = {{"-","-","-"},{"-","-","-"},{"-","-","-"}};
-        for(int i = 0; i < square.length; i++){
-            for(int j = 0; j < be.size(); j++){
-                if(be.get(j).getPlayer().equals(xPlayer)){
-                    square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "X";
-                }else if(be.get(j).getPlayer().equals(oPlayer)){
-                    square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "O";
-                }
-
-                    if(!square[i][0].equals("-") && square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
-                        dominate = square[i][0];
-                    }else if(!square[0][i].equals("-") && (square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i]))){
-                        dominate = square[0][i];
-                    }else if(!square[0][0].equals("-") && square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
-                        dominate = square[2][2];
-                    }else if(!square[0][2].equals("-") && square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
-                        dominate = square[2][0];
-                    }else{
-                        winner = "none";
-                        status = "on battle";
-                    }
-                }
-
+        for(int j = 0; j < be.size(); j++){
+            if(be.get(j).getPlayer().equals(xPlayer)){
+                square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "X";
+            }else if(be.get(j).getPlayer().equals(oPlayer)){
+                square[be.get(j).getRowSquare()][be.get(j).getColumnSquare()] = "O";
+            }
         }
+        
+        String dominate = getDominate(square);
         switch(dominate){
             case "X" :
             winner = xPlayer;
@@ -122,6 +112,10 @@ public class RoomServiceImpl implements RoomService {
             case "O" :
             winner = oPlayer;
             status = "Finished";
+            break;
+            case "" :
+            winner = "none";
+            status = "on battle";
             break;
         }
         if(!winner.equals("none") && !winner.equals("") && ren.getWinner() == null){
@@ -133,5 +127,25 @@ public class RoomServiceImpl implements RoomService {
         returnValue.put("winner", winner);
         returnValue.put("move position", Arrays.deepToString(square));
         return returnValue;
+    }
+
+    private String getDominate(String[][] square){
+        String dominate = "";
+        for(int i = 0; i < square.length; i++){
+           for(int j = 0; j < square.length; j++){
+               if(!square[i][j].equals("-")){
+                    if(square[i][0].equals(square[i][0]) && square[i][1].equals(square[i][0]) && square[i][2].equals(square[i][0])){
+                        dominate = square[i][0];
+                    }else if(square[0][i].equals(square[0][i]) && square[1][i].equals(square[0][i]) && square[2][i].equals(square[0][i])){
+                        dominate = square[0][i];
+                    }else if(square[0][0].equals(square[0][0]) && square[1][1].equals(square[0][0]) && square[2][2].equals(square[0][0])){
+                        dominate = square[2][2];
+                    }else if(square[0][2].equals(square[0][2]) && square[1][1].equals(square[0][2]) && square[2][0].equals(square[0][2])){
+                        dominate = square[2][0];
+                    }
+               }
+           }
+        }
+        return dominate;
     }
 }
