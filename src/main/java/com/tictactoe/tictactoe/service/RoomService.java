@@ -8,5 +8,5 @@ public interface RoomService {
     Map<String, Object> createRoom(String name);
     Map<String, Object> entryRoom(String roomName, String name);
     Map<String, Object> position(String roomName, String name, Integer row, Integer column);
-    Map<String, Object> calculateWinner(String roomName, String xPlayer, String oPlayer);
+    //Map<String, Object> calculateWinner(String roomName, String xPlayer, String oPlayer);
 }

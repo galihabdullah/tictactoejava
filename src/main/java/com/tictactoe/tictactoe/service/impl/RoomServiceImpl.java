@@ -59,6 +59,7 @@ public class RoomServiceImpl implements RoomService {
             throw new ResourceNotFoundException("you don't have access to this battle");
         }
         if(ren.getWinner() != null) throw new ResourceNotFoundException(calculateWinner(roomName, ren.getXplayer(),ren.getOplayer()).toString());
+        
         if(row > 2 || column > 2) throw new ResourceNotFoundException("Position invalid");
         List<BattleEntity> be = new ArrayList<>(battleRepository.findByRoomName(roomName));
         if(be.isEmpty() && ren.getOplayer().equals(name)) throw new ResourceNotFoundException("Player X First");
@@ -77,9 +78,7 @@ public class RoomServiceImpl implements RoomService {
         return status;
     }
 
-
-    @Override
-    public Map<String, Object> calculateWinner(String roomName, String xPlayer, String oPlayer) {
+    private Map<String, Object> calculateWinner(String roomName, String xPlayer, String oPlayer) {
         List<BattleEntity> be = battleRepository.findByRoomName(roomName);
         RoomEntity ren = roomRepository.findByRoomName(roomName);
         String status ="";
@@ -89,7 +88,6 @@ public class RoomServiceImpl implements RoomService {
             winner = "none";
         }
         String[][] square = {{"-","-","-"},{"-","-","-"},{"-","-","-"}};
-        int[] column = new int[9];
         for(int i = 0; i < square.length; i++){
             for(int j = 0; j < be.size(); j++){
                 if(be.get(j).getPlayer().equals(xPlayer)){

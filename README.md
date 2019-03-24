@@ -1,4 +1,3 @@
-Latar Belakang
 applikasi ini hanya untuk komparasi antara bahasa pemrograman java dan php
 
 technology 
