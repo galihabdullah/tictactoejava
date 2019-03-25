@@ -63,4 +63,5 @@ public class BattleEntity {
     public void setColumnSquare(int columnSquare) {
         this.columnSquare = columnSquare;
     }
+
 }
