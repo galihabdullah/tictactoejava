@@ -35,4 +35,9 @@ public class MainController {
         return roomService.position(roomName, name, row, column);
     }
 
+    @PostMapping("/status/{roomName}")
+    public Map<String, Object> getStatus(@PathVariable(value = "roomName") String roomName){
+        return roomService.getStatus(roomName);
+    }
+
 }
